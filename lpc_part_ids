@@ -33,10 +33,11 @@ unless ARGV[0]
   abort
 end
 
-parts = {}
+part_ids = {}
+part_names = {}
 
 file = File.open(ARGV[0], :encoding => "UTF-8")
-res = file.read.scan(/(LPC\d\d\w?\d\dH?(F\w{2}\d{2})?(\/\d{2,3})?( = |\n\n(\d+\n\n)?)0x[\dxA-F \/]+)/)
+res = file.read.scan(/(LPC\d\d\w?\d\dH?(F\w{2}\d{2})?(\/\d{2,3})?(\[\d\])?( = |\n\n(\d+\n\n)?)0x[\dxA-F \/]+)/)
 
 res.each do |line|
   line = line.first.gsub("\n\n", ' = ')
@@ -50,16 +51,17 @@ res.each do |line|
 	ids = line.scan(/0x[0-9A-F]{4} [0-9A-F]{4}/)
 	ids.each do |id|
 		id.gsub!(' ', '')
-	end
 
-	unless parts[ids[0]]
-		puts "#define #{device_name}#{ids[1] ? '_1' : '  '} #{ids[0]}"
-		parts[ids[0]] = true
-	end
+    unless part_ids[id]
+	    if part_names[device_name]
+	      part_names[device_name] += 1
+	    else
+	       part_names[device_name] = 1
+	    end
+		  puts "#define #{device_name}_#{part_names[device_name].to_s} #{id}"
+		  part_ids[id] = true
+	  end
 
-  unless parts[ids[1]]
-		puts "#define #{device_name}_2 #{ids[1]}"
-		parts[ids[1]] = true
-	end	if ids[1]
+  end
 end
 
