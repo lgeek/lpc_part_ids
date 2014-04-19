@@ -42,25 +42,25 @@ res = file.read.scan(/(LPC\d\d\w?\d\dH?(F\w{2}\d{2})?(\/\d{2,3})?(\[\d\])?( = |\
 res.each do |line|
   line = line.first.gsub("\n\n", ' = ')
 
-	part = line.match(/LPC\d\d\w?\d\dH?/)
-	variant = line.match(/\/\d{2,3}/)
-	variant = variant[0].gsub('/', '') if variant
-	device_name = part.to_s
-	device_name += '_' + variant.to_s if variant
-	
-	ids = line.scan(/0x[0-9A-F]{4} [0-9A-F]{4}/)
-	ids.each do |id|
-		id.gsub!(' ', '')
+  part = line.match(/LPC\d\d\w?\d\dH?/)
+  variant = line.match(/\/\d{2,3}/)
+  variant = variant[0].gsub('/', '') if variant
+  device_name = part.to_s
+  device_name += '_' + variant.to_s if variant
+
+  ids = line.scan(/0x[0-9A-F]{4} [0-9A-F]{4}/)
+  ids.each do |id|
+    id.gsub!(' ', '')
 
     unless part_ids[id]
-	    if part_names[device_name]
-	      part_names[device_name] += 1
-	    else
-	       part_names[device_name] = 1
-	    end
-		  puts "#define #{device_name}_#{part_names[device_name].to_s} #{id}"
-		  part_ids[id] = true
-	  end
+      if part_names[device_name]
+        part_names[device_name] += 1
+      else
+         part_names[device_name] = 1
+      end
+      puts "#define #{device_name}_#{part_names[device_name].to_s} #{id}"
+      part_ids[id] = true
+    end
 
   end
 end
