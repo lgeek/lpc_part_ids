@@ -47,8 +47,6 @@ res.each do |r|
 
   ids = r[2].gsub(' ', '').split('/')
   ids.each do |id|
-    id.gsub!(' ', '')
-
     unless part_ids[id]
       if part_names[device_name]
         part_names[device_name] += 1
