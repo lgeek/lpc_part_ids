@@ -37,18 +37,15 @@ part_ids = {}
 part_names = {}
 
 file = File.open(ARGV[0], :encoding => "UTF-8")
-res = file.read.scan(/(LPC\d\d\w?\d\dH?(F\w{2}\d{2})?(\/\d{2,3})?(\[\d\])?( = |\n\n(\d+\n\n)?)0x[\dxA-F \/]+)/)
+res = file.read.scan(/(?<part>LPC\d\d\w?\d\dH?)(F\w{2}\d{2})?(\/(?<variant>\d{2,3}))?(\[\d\])?( = |\n\n(\d+\n\n)?)(?<ids>0x[\dxA-F \/]+)/)
 
-res.each do |line|
-  line = line.first.gsub("\n\n", ' = ')
-
-  part = line.match(/LPC\d\d\w?\d\dH?/)
-  variant = line.match(/\/\d{2,3}/)
-  variant = variant[0].gsub('/', '') if variant
+res.each do |r|
+  part = r[0]
+  variant = r[1]
   device_name = part.to_s
   device_name += '_' + variant.to_s if variant
 
-  ids = line.scan(/0x[0-9A-F]{4} [0-9A-F]{4}/)
+  ids = r[2].gsub(' ', '').split('/')
   ids.each do |id|
     id.gsub!(' ', '')
 
